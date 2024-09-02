@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.utils.checkpoint
 from diffusers.configuration_utils import ConfigMixin, register_to_config
 from diffusers.utils import BaseOutput, logging
-from diffusers.models.embeddings import GaussianFourierProjection, TimestepEmbedding, Timesteps, TextTimeEmbedding
+from diffusers.models.embeddings import GaussianFourierProjection, TimestepEmbedding, Timesteps
 from diffusers.models.modeling_utils import ModelMixin
 
 from model.activations import get_activation
@@ -334,16 +334,17 @@ class UNet2DConditionModel(ModelMixin, ConfigMixin):
         else:
             self.class_embedding = None
 
-        if addition_embed_type == "text":
-            if encoder_hid_dim is not None:
-                text_time_embedding_from_dim = encoder_hid_dim
-            else:
-                text_time_embedding_from_dim = cross_attention_dim
+        # if addition_embed_type == "text":
+        #     if encoder_hid_dim is not None:
+        #         text_time_embedding_from_dim = encoder_hid_dim
+        #     else:
+        #         text_time_embedding_from_dim = cross_attention_dim
 
-            self.add_embedding = TextTimeEmbedding(
-                text_time_embedding_from_dim, time_embed_dim, num_heads=addition_embed_type_num_heads
-            )
-        elif addition_embed_type == "text_time":
+        #     self.add_embedding = TextTimeEmbedding(
+        #         text_time_embedding_from_dim, time_embed_dim, num_heads=addition_embed_type_num_heads
+        #     )
+        # elif addition_embed_type == "text_time":
+        if addition_embed_type == "text_time":
             self.add_time_proj = Timesteps(addition_time_embed_dim, flip_sin_to_cos, freq_shift)
             self.add_embedding = TimestepEmbedding(projection_class_embeddings_input_dim, time_embed_dim)
         elif addition_embed_type is not None:
